@@ -92,7 +92,7 @@ class SSD(nn.Module):
 
         if self.is_test:
             confidences = F.softmax(confidences, dim=2)
-            if extract_simplified := True:
+            if extract_simplified := False:
                 boxes = locations
             else:
                 boxes = box_utils.convert_locations_to_boxes(

@@ -4,7 +4,7 @@ log_dir="$model_root_path/logs"
 log="$log_dir/log"
 mkdir -p "$log_dir"
 
-python3 -u train.py \
+python -u train.py \
   --datasets \
   ./data/wider_face_add_lm_10_10 \
   --validation_dataset \
@@ -13,12 +13,14 @@ python3 -u train.py \
   RFB \
   --num_epochs \
   200 \
-  --milestones \
-  "95,150" \
+  `--milestones` \
+  `95,150` \
   --lr \
-  1e-2 \
+  1e-4 \
+  --resume \
+  "models/pretrained/version-RFB-640.pth" \
   --batch_size \
-  24 \
+  16 \
   --input_size \
   640 \
   --checkpoint_folder \
@@ -29,4 +31,6 @@ python3 -u train.py \
   ${log_dir} \
   --cuda_index \
   0 \
+  --optimizer_type \
+  Adam \
   2>&1 | tee "$log"

@@ -17,7 +17,7 @@ class TrainAugmentation:
             RandomMirror(),
             ToPercentCoords(),
             Resize(self.size),
-            ConvertColor(current='RGB', transform='GRAY'),  # converting to grayscale
+            # ConvertColor(current='RGB', transform='GRAY'),  # converting to grayscale
             SubtractMeans(self.mean),
             lambda img, boxes=None, labels=None: (img / std, boxes, labels),
             ToTensor(),
@@ -39,7 +39,7 @@ class TestTransform:
         self.transform = Compose([
             ToPercentCoords(),
             Resize(size),
-            ConvertColor(current='RGB', transform='GRAY'),  # converting to grayscale
+            # ConvertColor(current='RGB', transform='GRAY'),  # converting to grayscale
             SubtractMeans(mean),
             lambda img, boxes=None, labels=None: (img / std, boxes, labels),
             ToTensor(),
@@ -53,7 +53,7 @@ class PredictionTransform:
     def __init__(self, size, mean=0.0, std=1.0):
         self.transform = Compose([
             Resize(size),
-            ConvertColor(current='RGB', transform='GRAY'),  # converting to grayscale
+            # ConvertColor(current='RGB', transform='GRAY'),  # converting to grayscale
             SubtractMeans(mean),
             lambda img, boxes=None, labels=None: (img / std, boxes, labels),
             ToTensor()

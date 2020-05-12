@@ -7,12 +7,14 @@
 import math
 import os
 import sys
+from pathlib import Path
 
 import cv2
 sys.path.append('../')
 from vision.ssd.config.fd_config import define_img_size
+from fastprogress.fastprogress import master_bar, progress_bar
 
-input_img_size = 320  # define input size ,default optional(128/160/320/480/640/1280)
+input_img_size = 640  # define input size ,default optional(128/160/320/480/640/1280)
 define_img_size(input_img_size)  # must put define_img_size() before 'import create_mb_tiny_fd, create_mb_tiny_fd_predictor'
 
 from vision.ssd.mb_tiny_fd import create_mb_tiny_fd, create_mb_tiny_fd_predictor
@@ -21,7 +23,7 @@ from vision.ssd.mb_tiny_RFB_fd import create_Mb_Tiny_RFB_fd, create_Mb_Tiny_RFB_
 label_path = "../models/voc-model-labels.txt"
 
 # net_type = "slim"          # inference faster,lower precision
-net_type = "RFB"  # inference lower,higher precision
+net_type = "RFB"  # inference slower,higher precision
 
 class_names = [name.strip() for name in open(label_path).readlines()]
 num_classes = len(class_names)
@@ -30,17 +32,15 @@ test_device = "cuda:0"
 candidate_size = 800
 threshold = 0.1
 
-val_image_root = "/pic/linzai/1080Ti/home_linzai/PycharmProjects/insightface/RetinaFace/data/retinaface/val"  # path to widerface valuation image root
-val_result_txt_save_root = "./widerface_evaluation/"  # result directory
-
 if net_type == 'slim':
-    model_path = "../models/pretrained/version-slim-320.pth"
-    # model_path = "../models/pretrained/version-slim-640.pth"
+    # model_path = "../models/pretrained/version-slim-320.pth"
+    model_path = "../models/pretrained/version-slim-640.pth"
     net = create_mb_tiny_fd(len(class_names), is_test=True, device=test_device)
     predictor = create_mb_tiny_fd_predictor(net, candidate_size=candidate_size, device=test_device)
 elif net_type == 'RFB':
-    model_path = "../models/pretrained/version-RFB-320.pth"
+    # model_path = "../models/pretrained/version-RFB-320.pth"
     # model_path = "../models/pretrained/version-RFB-640.pth"
+    model_path = Path("/home/ppotrykus/Programs/light_face/models/train-version-RFB/RFB-Epoch-10-scratch-gray.pth")
     net = create_Mb_Tiny_RFB_fd(len(class_names), is_test=True, device=test_device)
     predictor = create_Mb_Tiny_RFB_fd_predictor(net, candidate_size=candidate_size, device=test_device)
 else:
@@ -48,9 +48,13 @@ else:
     sys.exit(1)
 net.load(model_path)
 
+val_image_root = "/home/ppotrykus/Programs/light_face/data/wider_face/WIDER_val"  # path to widerface val image root
+val_result_txt_save_root = f'./{model_path.stem}/'  # result directory
+
 counter = 0
-for parent, dir_names, file_names in os.walk(val_image_root):
-    for file_name in file_names:
+mb = master_bar(list(os.walk(val_image_root)))
+for parent, dir_names, file_names in mb:
+    for file_name in progress_bar(file_names, parent=mb):
         if not file_name.lower().endswith('jpg'):
             continue
         im = cv2.imread(os.path.join(parent, file_name), cv2.IMREAD_COLOR)
@@ -68,6 +72,6 @@ for parent, dir_names, file_names in os.walk(val_image_root):
             fout.write('%d %d %d %d %.03f' % (math.floor(bbox[0]), math.floor(bbox[1]), math.ceil(bbox[2] - bbox[0]), math.ceil(bbox[3] - bbox[1]), probs[i] if probs[i] <= 1 else 1) + '\n')
         fout.close()
         counter += 1
-        print('[%d] %s is processed.' % (counter, file_name))
+        # print('[%d] %s is processed.' % (counter, file_name))
 
 # note: with score_threshold = 0.11 and hard_nms, MAP of 320-input model on widerface val set is: 0.785/0.695/0.431
