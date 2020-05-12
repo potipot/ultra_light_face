@@ -3,6 +3,7 @@ This code uses the onnx model to detect faces from live video or cameras.
 """
 import os
 import time
+import argparse
 
 import cv2
 import numpy as np
@@ -12,6 +13,23 @@ from caffe2.python.onnx import backend
 
 # onnx runtime
 import onnxruntime as ort
+
+parser = argparse.ArgumentParser(
+    description='detect_imgs')
+
+parser.add_argument('--net_type', default="RFB", type=str,
+                    help='The network architecture ,optional: RFB (higher precision) or slim (faster)')
+parser.add_argument('--threshold', default=0.6, type=float,
+                    help='score threshold')
+parser.add_argument('--candidate_size', default=1500, type=int,
+                    help='nms candidate size')
+parser.add_argument('--path', default="imgs", type=str,
+                    help='imgs dir')
+parser.add_argument('--test_device', default="CUDA", type=str,
+                    help='CUDA or CPU')
+parser.add_argument('--output', default="./detect_imgs_results_onnx", type=str,
+                    help='specify target output path')
+args = parser.parse_args()
 
 
 def predict(width, height, confidences, boxes, prob_threshold, iou_threshold=0.3, top_k=-1):
@@ -43,22 +61,22 @@ def predict(width, height, confidences, boxes, prob_threshold, iou_threshold=0.3
     return picked_box_probs[:, :4].astype(np.int32), np.array(picked_labels), picked_box_probs[:, 4]
 
 
+result_path = args.output
+test_device = args.test_device
 label_path = "models/voc-model-labels.txt"
-
-onnx_path = "models/onnx/version-RFB-320.onnx"
+onnx_path = "models/onnx/version-slim-320.onnx"
 class_names = [name.strip() for name in open(label_path).readlines()]
 
 predictor = onnx.load(onnx_path)
 onnx.checker.check_model(predictor)
 onnx.helper.printable_graph(predictor.graph)
-predictor = backend.prepare(predictor, device="CPU")  # default CPU
+predictor = backend.prepare(predictor, device=test_device)
 
 ort_session = ort.InferenceSession(onnx_path)
 input_name = ort_session.get_inputs()[0].name
-result_path = "./detect_imgs_results_onnx"
 
-threshold = 0.7
-path = "imgs"
+threshold = args.threshold
+path = args.path
 sum = 0
 if not os.path.exists(result_path):
     os.makedirs(result_path)

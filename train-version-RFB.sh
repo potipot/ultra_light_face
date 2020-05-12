@@ -20,7 +20,7 @@ python3 -u train.py \
   --batch_size \
   24 \
   --input_size \
-  320 \
+  640 \
   --checkpoint_folder \
   ${model_root_path} \
   --num_workers \

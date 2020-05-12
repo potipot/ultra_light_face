@@ -7,7 +7,9 @@
 #include <iostream>
 #include <string>
 #include <vector>
-#include "opencv2/opencv.hpp"
+#include <opencv2/core/core.hpp>
+#include <opencv2/highgui/highgui.hpp>
+#include "opencv2/dnn/dnn.hpp"
 
 #define num_featuremap 4
 #define hard_nms 1

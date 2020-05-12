@@ -201,6 +201,12 @@ class ConvertColor(object):
             image = cv2.cvtColor(image, cv2.COLOR_HSV2BGR)
         elif self.current == 'HSV' and self.transform == "RGB":
             image = cv2.cvtColor(image, cv2.COLOR_HSV2RGB)
+        elif self.current == 'RGB' and self.transform == 'GRAY':
+            image = cv2.cvtColor(image, cv2.COLOR_RGB2GRAY)
+            image = np.repeat(image[:, :, np.newaxis], 3, 2)
+        elif self.current == 'BGR' and self.transform == 'GRAY':
+            image = cv2.cvtColor(image, cv2.COLOR_BGR2GRAY)
+            image = np.repeat(image[:, :, np.newaxis], 3, 2)
         else:
             raise NotImplementedError
         return image, boxes, labels

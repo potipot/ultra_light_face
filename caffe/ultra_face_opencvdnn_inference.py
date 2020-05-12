@@ -13,7 +13,7 @@ parser.add_argument('--caffe_prototxt_path', default="model/RFB-320/RFB-320.prot
 parser.add_argument('--caffe_model_path', default="model/RFB-320/RFB-320.caffemodel", type=str, help='caffe_model_path')
 parser.add_argument('--onnx_path', default="../models/onnx/version-RFB-320_simplified.onnx", type=str, help='onnx version')
 parser.add_argument('--input_size', default="320,240", type=str, help='define network input size,format: width,height')
-parser.add_argument('--threshold', default=0.7, type=float, help='score threshold')
+parser.add_argument('--threshold', default=0.5, type=float, help='score threshold')
 parser.add_argument('--imgs_path', default="../MNN/imgs", type=str, help='imgs dir')
 parser.add_argument('--results_path', default="results", type=str, help='results dir')
 args = parser.parse_args()
@@ -147,9 +147,7 @@ def center_form_to_corner_form(locations):
 def inference():
     net = dnn.readNetFromONNX(args.onnx_path)  # onnx version
     # net = dnn.readNetFromCaffe(args.caffe_prototxt_path, args.caffe_model_path)  # caffe model converted from onnx
-    input_size = [int(v.strip()) for v in args.input_size.split(",")]
-    witdh = input_size[0]
-    height = input_size[1]
+    input_size = tuple(int(v.strip()) for v in args.input_size.split(","))
     priors = define_img_size(input_size)
     result_path = args.results_path
     imgs_path = args.imgs_path
@@ -159,9 +157,9 @@ def inference():
     for file_path in listdir:
         img_path = os.path.join(imgs_path, file_path)
         img_ori = cv2.imread(img_path)
-        rect = cv2.resize(img_ori, (witdh, height))
+        rect = cv2.resize(img_ori, input_size)
         rect = cv2.cvtColor(rect, cv2.COLOR_BGR2RGB)
-        net.setInput(dnn.blobFromImage(rect, 1 / image_std, (witdh, height), 127))
+        net.setInput(dnn.blobFromImage(rect, 1 / image_std, input_size, 127))
         time_time = time.time()
         boxes, scores = net.forward(["boxes", "scores"])
         print("inference time: {} s".format(round(time.time() - time_time, 4)))
@@ -175,8 +173,8 @@ def inference():
             cv2.rectangle(img_ori, (box[0], box[1]), (box[2], box[3]), (0, 255, 0), 2)
         cv2.imwrite(os.path.join(result_path, file_path), img_ori)
         print("result_pic is written to {}".format(os.path.join(result_path, file_path)))
-        cv2.imshow("ultra_face_ace_opencvdnn_py", img_ori)
-        cv2.waitKey(-1)
+        # cv2.imshow("ultra_face_ace_opencvdnn_py", img_ori)
+        # cv2.waitKey(-1)
     cv2.destroyAllWindows()
 
 
