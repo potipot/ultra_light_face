@@ -17,7 +17,7 @@ def SeperableConv2d(in_channels, out_channels, kernel_size=1, stride=1, padding=
     )
 
 
-def create_Mb_Tiny_RFB_fd(num_classes, is_test=False, device="cuda"):
+def create_Mb_Tiny_RFB_fd(num_classes, is_test=False, device="cuda", without_postprocessing=False):
     base_net = Mb_Tiny_RFB(2)
     base_net_model = base_net.model  # disable dropout layer
 
@@ -49,8 +49,8 @@ def create_Mb_Tiny_RFB_fd(num_classes, is_test=False, device="cuda"):
         Conv2d(in_channels=base_net.base_channel * 16, out_channels=3 * num_classes, kernel_size=3, padding=1)
     ])
 
-    return SSD(num_classes, base_net_model, source_layer_indexes,
-               extras, classification_headers, regression_headers, is_test=is_test, config=config, device=device)
+    return SSD(num_classes, base_net_model, source_layer_indexes, extras, classification_headers, regression_headers,
+               is_test=is_test, config=config, device=device, without_postprocessing=without_postprocessing)
 
 
 def create_Mb_Tiny_RFB_fd_predictor(net, candidate_size=200, nms_method=None, sigma=0.5, device=None):

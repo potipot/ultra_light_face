@@ -7,13 +7,13 @@ import torch.onnx
 
 from vision.ssd.config.fd_config import define_img_size
 
-input_img_size = 320  # define input size ,default optional(128/160/320/480/640/1280)
+input_img_size = 640  # define input size ,default optional(128/160/320/480/640/1280)
 define_img_size(input_img_size)
 from vision.ssd.mb_tiny_RFB_fd import create_Mb_Tiny_RFB_fd
 from vision.ssd.mb_tiny_fd import create_mb_tiny_fd
 
-net_type = "slim"  # inference faster,lower precision
-# net_type = "RFB"  # inference lower,higher precision
+# net_type = "slim"  # inference faster,lower precision
+net_type = "RFB"  # inference lower,higher precision
 
 label_path = "models/voc-model-labels.txt"
 class_names = [name.strip() for name in open(label_path).readlines()]
@@ -22,11 +22,11 @@ num_classes = len(class_names)
 if net_type == 'slim':
     # model_path = "models/pretrained/version-slim-320.pth"
     model_path = "models/pretrained/version-slim-640.pth"
-    net = create_mb_tiny_fd(len(class_names), is_test=True)
+    net = create_mb_tiny_fd(len(class_names), is_test=True, without_postprocessing=True)
 elif net_type == 'RFB':
     # model_path = "models/pretrained/version-RFB-320.pth"
     model_path = "models/pretrained/version-RFB-640.pth"
-    net = create_Mb_Tiny_RFB_fd(len(class_names), is_test=True)
+    net = create_Mb_Tiny_RFB_fd(len(class_names), is_test=True, without_postprocessing=True)
 
 else:
     print("unsupport network type.")

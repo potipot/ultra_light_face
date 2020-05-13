@@ -13,8 +13,8 @@ GraphPath = namedtuple("GraphPath", ['s0', 'name', 's1'])
 
 class SSD(nn.Module):
     def __init__(self, num_classes: int, base_net: nn.ModuleList, source_layer_indexes: List[int],
-                 extras: nn.ModuleList, classification_headers: nn.ModuleList,
-                 regression_headers: nn.ModuleList, is_test=False, config=None, device=None):
+                 extras: nn.ModuleList, classification_headers: nn.ModuleList, regression_headers: nn.ModuleList,
+                 is_test=False, config=None, device=None, without_postprocessing=False):
         """Compose a SSD model using the given components.
         """
         super(SSD, self).__init__()
@@ -26,6 +26,7 @@ class SSD(nn.Module):
         self.classification_headers = classification_headers
         self.regression_headers = regression_headers
         self.is_test = is_test
+        self.without_postprocessing = without_postprocessing
         self.config = config
 
         # register layers in source_layer_indexes by adding them to a module list
@@ -92,7 +93,7 @@ class SSD(nn.Module):
 
         if self.is_test:
             confidences = F.softmax(confidences, dim=2)
-            if extract_simplified := False:
+            if self.without_postprocessing:
                 boxes = locations
             else:
                 boxes = box_utils.convert_locations_to_boxes(
