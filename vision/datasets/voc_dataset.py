@@ -106,11 +106,22 @@ class VOCDataset:
 
                 labels.append(self.class_dict[class_name])
                 is_difficult_str = object.find('difficult').text
-                is_difficult.append(int(is_difficult_str) if is_difficult_str else 0)
+                is_difficult.append(self._intify_difficulty_label(is_difficult_str))
+                # is_difficult.append(int(is_difficult_str) if is_difficult_str else 0)
 
         return (np.array(boxes, dtype=np.float32),
                 np.array(labels, dtype=np.int64),
                 np.array(is_difficult, dtype=np.uint8))
+
+    @staticmethod
+    def _intify_difficulty_label(is_difficult_str):
+        if is_difficult_str == 'Unspecified':
+            is_difficult_str = 0
+        elif is_difficult_str:
+            is_difficult_str = int(is_difficult_str)
+        else:
+            is_difficult_str = 0
+        return is_difficult_str
 
     def _read_image(self, image_id):
         image_file = self.root / f"JPEGImages/{image_id}.jpg"
