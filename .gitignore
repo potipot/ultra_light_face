@@ -13,3 +13,10 @@ widerface_evaluate/build
 widerface_evaluate/*.so
 widerface_evaluate/*.c
 /models/train-version-RFB/
+/data/ir_tufts_video/
+/data/ir_tufts/
+/models/RFB-full_ds-Adam-1e-5/
+/models/RFB-ir_tufts-Adam-1e-4/
+/models/RFB-ir_tufts-Adam-1e-5/
+/models/RFB-ir_tufts-SGD/
+/models/RFB-ir_tufts_full-Adam-1e-5/

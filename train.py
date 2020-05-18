@@ -24,7 +24,7 @@ parser.add_argument("--dataset_type", default="voc", type=str,
                     help='Specify dataset type. Currently support voc.')
 
 parser.add_argument('--datasets', nargs='+', help='Dataset directory path')
-parser.add_argument('--validation_dataset', help='Dataset directory path')
+parser.add_argument('--validation_dataset', default=None, help='Dataset directory path')
 parser.add_argument('--balance_data', action='store_true',
                     help="Balance training data by down-sampling more frequent labels.")
 
@@ -234,8 +234,9 @@ if __name__ == '__main__':
                               num_workers=args.num_workers,
                               shuffle=True)
     logging.info("Prepare Validation datasets.")
+    validation_dataset = args.validation_dataset or dataset_path
     if args.dataset_type == "voc":
-        val_dataset = VOCDataset(args.validation_dataset, transform=test_transform,
+        val_dataset = VOCDataset(validation_dataset, transform=test_transform,
                                  target_transform=target_transform, is_test=True)
     logging.info("validation dataset size: {}".format(len(val_dataset)))
 

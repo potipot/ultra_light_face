@@ -20,7 +20,7 @@ parser.add_argument('--threshold', default=0.6, type=float,
                     help='score threshold')
 parser.add_argument('--candidate_size', default=1500, type=int,
                     help='nms candidate size')
-parser.add_argument('--path', default="/home/ppotrykus/Datasets/image/face_thermo/from_video/thermalVideo_1589106616294", type=str,
+parser.add_argument('--path', default="/home/ppotrykus/Datasets/image/face_thermo/from_video/thermalVideo_1589106539987", type=str,
                     help='imgs dir')
 parser.add_argument('--test_device', default="cuda:0", type=str,
                     help='cuda:0 or cpu')
@@ -54,7 +54,8 @@ elif args.net_type == 'RFB':
     # model_path = "models/pretrained/version-RFB-640.pth"
     # model_path = 'models/pretrained/RFB-640-gray-resume.pth'
     # model_path = "models/RFB-ir_tufts-Adam-1e-4/RFB-Epoch-40-Loss-0.32918739318847656.pth"
-    model_path = "models/RFB-ir_tufts-Adam-1e-5/RFB-Epoch-999-Loss-0.47017228603363037.pth"
+    # model_path = "models/RFB-ir_tufts-Adam-1e-5/RFB-Epoch-999-Loss-0.47017228603363037.pth"
+    model_path = "models/RFB-ir_tufts_full-Adam-1e-5/RFB-Epoch-400-Loss-1.3762706858771188.pth"
     net = create_Mb_Tiny_RFB_fd(len(class_names), is_test= True, device=test_device)
     predictor = create_Mb_Tiny_RFB_fd_predictor(net, candidate_size=args.candidate_size, device=test_device)
 else:
