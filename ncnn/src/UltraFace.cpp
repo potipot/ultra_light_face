@@ -9,7 +9,7 @@
 #define clip(x, y) (x < 0 ? 0 : (x > y ? y : x))
 
 #include "UltraFace.hpp"
-#include "mat.h"
+//#include "mat.h"
 
 UltraFace::UltraFace(const std::string &bin_path, const std::string &param_path,
                      int input_width, int input_length, int num_thread_,

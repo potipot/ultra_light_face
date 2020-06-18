@@ -25,7 +25,7 @@ if net_type == 'slim':
     net = create_mb_tiny_fd(len(class_names), is_test=True, without_postprocessing=True)
 elif net_type == 'RFB':
     # model_path = "models/pretrained/version-RFB-320.pth"
-    model_path = "models/pretrained/RFB-640-full-resume.pth"
+    model_path = "models/pretrained/ir_faces/RFB-640-best.pth"
     net = create_Mb_Tiny_RFB_fd(len(class_names), is_test=True, without_postprocessing=True)
 
 else:
@@ -37,7 +37,7 @@ net.to("cuda")
 
 model_path = Path(model_path)
 model_name = model_path.stem
-model_path = model_path.parent.parent/'onnx'/(model_name+'_wopp.onnx')
+model_path = model_path.parent/(model_name+'_wopp.onnx')
 
 # dummy_input = torch.randn(1, 3, 240, 320).to("cuda")
 dummy_input = torch.randn(1, 3, 480, 640).to("cuda") #if input size is 640*480
